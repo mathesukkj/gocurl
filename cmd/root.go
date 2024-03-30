@@ -19,7 +19,9 @@ var (
 	}
 
 	headersString string
+	bodyString    string
 	Headers       = make(map[string]string, 0)
+	Body          = make(map[string]string, 0)
 )
 
 func Execute() {
@@ -29,7 +31,11 @@ func Execute() {
 	}
 
 	if headersString != "" {
-		ParseHeaders()
+		ParseToVariable(headersString, Headers)
+	}
+
+	if bodyString != "" {
+		ParseToVariable(bodyString, Body)
 	}
 }
 
@@ -38,23 +44,25 @@ func init() {
 
 	rootCmd.PersistentFlags().
 		StringVarP(&headersString, "headers", "H", "", "Pass custom headers to server")
+
+	rootCmd.PersistentFlags().
+		StringVarP(&bodyString, "data", "d", "", "Pass data via request body to server")
 }
 
-func ParseHeaders() []map[string]string {
-	xs := strings.Split(headersString, ";")
+func ParseToVariable(str string, variable map[string]string) {
+	xs := strings.Split(str, ";")
 	for _, v := range xs {
-		headerAndValue := strings.Split(v, ":")
-		if len(headerAndValue) < 2 {
-			fmt.Println("error: headers in wrong format, use key:value")
+		keyAndValue := strings.Split(v, ":")
+
+		if len(keyAndValue) < 2 {
+			fmt.Printf("error: wrong format, use key%svalue\n", ":")
 			os.Exit(1)
 		}
 
-		header := strings.Trim(headerAndValue[0], " ")
-		value := strings.Trim(headerAndValue[1], " ")
-		Headers[header] = value
+		key := strings.Trim(keyAndValue[0], " ")
+		value := strings.Trim(keyAndValue[1], " ")
+		variable[key] = value
 	}
 
-	fmt.Println(Headers)
-	return nil
-
+	fmt.Println(variable)
 }
