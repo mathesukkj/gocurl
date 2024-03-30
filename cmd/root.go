@@ -18,10 +18,16 @@ var (
 		// Run: func(cmd *cobra.Command, args []string) {},
 	}
 
-	headersString string
-	bodyString    string
-	Headers       = make(map[string]string, 0)
-	Body          = make(map[string]string, 0)
+	headersString  string
+	bodyString     string
+	outputFilename string
+	cookiesString  string
+	isVerbose      bool
+	includeHeaders bool
+
+	Headers = make(map[string]string, 0)
+	Body    = make(map[string]string, 0)
+	Cookies = make(map[string]string, 0)
 )
 
 func Execute() {
@@ -37,6 +43,10 @@ func Execute() {
 	if bodyString != "" {
 		ParseToVariable(bodyString, Body)
 	}
+
+	if cookiesString != "" {
+		ParseToVariable(cookiesString, Cookies)
+	}
 }
 
 func init() {
@@ -47,6 +57,19 @@ func init() {
 
 	rootCmd.PersistentFlags().
 		StringVarP(&bodyString, "data", "d", "", "Pass data via request body to server")
+
+	rootCmd.PersistentFlags().
+		StringVarP(&cookiesString, "cookies", "c", "", "Send cookies with the request")
+
+		// TODO
+	rootCmd.PersistentFlags().
+		StringVarP(&outputFilename, "output", "o", "", "Output the response to a file")
+
+	rootCmd.PersistentFlags().
+		BoolVarP(&includeHeaders, "include", "i", false, "Include headers on output")
+
+	rootCmd.PersistentFlags().
+		BoolVarP(&isVerbose, "verbose", "v", false, "Outputs detailed data about the request and response")
 }
 
 func ParseToVariable(str string, variable map[string]string) {
