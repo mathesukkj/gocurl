@@ -4,6 +4,8 @@ Copyright © 2024 Matheus Kemuel kemuel.g7363@gmail.com
 package cmd
 
 import (
+	"fmt"
+	"io"
 	"log"
 	"net/http"
 
@@ -16,12 +18,12 @@ var getCmd = &cobra.Command{
 	Short: "Does get requests, and output the response to stdout",
 	Long:  `Uses the golang http package to do get requests, and the fmt package to output the response as text to stdout.`,
 	Run: func(cmd *cobra.Command, args []string) {
+		getRequest(args[0])
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(getCmd)
-
 }
 
 func getRequest(url string) {
@@ -30,5 +32,15 @@ func getRequest(url string) {
 		log.Fatal(err)
 	}
 
-	http.DefaultClient.Do(r)
+	response, err := http.DefaultClient.Do(r)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	data, err := io.ReadAll(response.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Print(string(data))
 }
