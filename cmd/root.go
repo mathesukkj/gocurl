@@ -39,19 +39,6 @@ func Execute() {
 	if err != nil {
 		os.Exit(1)
 	}
-
-	if headersString != "" {
-		ParseToVariable(headersString, Headers)
-	}
-
-	if bodyString != "" {
-		ParseToVariable(bodyString, Body)
-		fmt.Println(bodyString)
-	}
-
-	if cookiesString != "" {
-		ParseToVariable(cookiesString, Cookies)
-	}
 }
 
 func init() {
@@ -76,6 +63,7 @@ func init() {
 	rootCmd.PersistentFlags().
 		BoolVarP(&isVerbose, "verbose", "v", false, "Outputs detailed data about the request and response")
 
+	rootCmd.PersistentPreRun = PreRunFunction
 }
 
 func ParseToVariable(str string, variable map[string]string) {
@@ -106,5 +94,20 @@ func AddFlagsToRequest(r *http.Request) {
 		}
 
 		r.AddCookie(&cookie)
+	}
+}
+
+func PreRunFunction(cmd *cobra.Command, args []string) {
+	if headersString != "" {
+		ParseToVariable(headersString, Headers)
+	}
+
+	if bodyString != "" {
+		ParseToVariable(bodyString, Body)
+		fmt.Println(bodyString)
+	}
+
+	if cookiesString != "" {
+		ParseToVariable(cookiesString, Cookies)
 	}
 }
