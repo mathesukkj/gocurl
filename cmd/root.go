@@ -6,6 +6,7 @@ package cmd
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 
@@ -29,6 +30,8 @@ var (
 	Headers = make(map[string]string, 0)
 	Body    = make(map[string]string, 0)
 	Cookies = make(map[string]string, 0)
+
+	FormValues = url.Values{}
 )
 
 func Execute() {
@@ -43,6 +46,7 @@ func Execute() {
 
 	if bodyString != "" {
 		ParseToVariable(bodyString, Body)
+		fmt.Println(bodyString)
 	}
 
 	if cookiesString != "" {
@@ -71,6 +75,7 @@ func init() {
 
 	rootCmd.PersistentFlags().
 		BoolVarP(&isVerbose, "verbose", "v", false, "Outputs detailed data about the request and response")
+
 }
 
 func ParseToVariable(str string, variable map[string]string) {
@@ -87,8 +92,6 @@ func ParseToVariable(str string, variable map[string]string) {
 		value := strings.Trim(keyAndValue[1], " ")
 		variable[key] = value
 	}
-
-	fmt.Println(variable)
 }
 
 func AddFlagsToRequest(r *http.Request) {
