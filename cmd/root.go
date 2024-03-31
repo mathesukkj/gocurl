@@ -5,6 +5,7 @@ package cmd
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 	"strings"
 
@@ -88,4 +89,19 @@ func ParseToVariable(str string, variable map[string]string) {
 	}
 
 	fmt.Println(variable)
+}
+
+func AddFlagsToRequest(r *http.Request) {
+	for k, v := range Headers {
+		r.Header.Add(k, v)
+	}
+
+	for k, v := range Cookies {
+		cookie := http.Cookie{
+			Name:  k,
+			Value: v,
+		}
+
+		r.AddCookie(&cookie)
+	}
 }
